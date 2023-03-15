@@ -1,0 +1,24 @@
+CREATE TABLE fruit_stand (id INTEGER PRIMARY KEY, fruit TEXT, quantity INTEGER, price INTEGER, color TEXT);
+
+INSERT INTO fruit_stand VALUES (1, "mango", 9, 2, "orange");
+INSERT INTO fruit_stand VALUES (2, "banana", 8, 3, "yellow");
+INSERT INTO fruit_stand VALUES (3, "papaya", 7, 4,"orange");
+INSERT INTO fruit_stand VALUES (4, "pitaya", 6, 6, "pink");
+INSERT INTO fruit_stand VALUES (5, "cherry", 8, 5, "red");
+INSERT INTO fruit_stand VALUES (6, "strawberries", 12, 5, "red");
+INSERT INTO fruit_stand VALUES (7, "lychee", 3, 4, "red");
+INSERT INTO fruit_stand VALUES (8, "pineapple", 7, 5, "yellow");
+INSERT INTO fruit_stand VALUES (9, "pear", 4, 3, "green");
+INSERT INTO fruit_stand VALUES (10, "grapes", 5, 5, "purple");
+INSERT INTO fruit_stand VALUES (11, "kiwi", 4, 3, "green");
+INSERT INTO fruit_stand VALUES (12, "lime", 18, 2, "green");
+INSERT INTO fruit_stand VALUES (13, "lemon", 14, 3, "yellow");
+INSERT INTO fruit_stand VALUES (14, "grapefruit", 5, 5, "orange");
+INSERT INTO fruit_stand VALUES (15, "pomegranate", 4, 6, "red");
+
+/* Isolate fruit items that are under $6 in ascending display */
+SELECT * FROM fruit_stand WHERE price < 6 ORDER BY price;
+
+/* Find the total amount of produce offered at the fruitstand */
+SELECT SUM(quantity) FROM fruit_stand;
+
