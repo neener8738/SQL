@@ -1,0 +1,239 @@
+/* Create database about the characters from the show Gossip Girl and their corresponding actors */
+
+/* Create table that represents the Gossip Girl characters */
+CREATE TABLE characters (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+first_name TEXT,
+last_name TEXT,
+birthdate TEXT,
+birthplace TEXT);
+
+/* Values are based off of the Gossip Girl Fandom Wiki
+https://gossipgirl.fandom.com/wiki/Gossip_Girl_Wiki */
+
+INSERT INTO characters (first_name, last_name, birthdate, birthplace) VALUES ("Serena", "van der Woodsen", "1991-07-14", "Manhattan");
+INSERT INTO characters (first_name, last_name, birthdate, birthplace) VALUES ("Blair", "Waldorf", "1990-11-15", "Manhattan");
+INSERT INTO characters (first_name, last_name, birthdate, birthplace) VALUES ("Nate", "Archibald", "1991-04-15", "Manhattan");
+INSERT INTO characters (first_name, last_name, birthdate, birthplace) VALUES ("Chuck", "Bass", "1991-01-19", "Manhattan");
+INSERT INTO characters (first_name, last_name, birthdate, birthplace) VALUES ("Dan", "Humphrey", "1990-10-20", "Brooklyn");
+INSERT INTO characters (first_name, last_name, birthdate, birthplace) VALUES ("Vanessa", "Abrams", "1991-02-19", "Brooklyn");
+INSERT INTO characters (first_name, last_name, birthdate, birthplace) VALUES ("Jenny", "Humphrey", "1993-03-30", "Brooklyn");
+INSERT INTO characters (first_name, last_name, birthdate, birthplace) VALUES ("Eric", "van der Woodsen", "1993-02-21", "Manhattan");
+INSERT INTO characters (first_name, last_name, birthdate, birthplace) VALUES ("Georgina", "Sparks", "1990-11-08", "New York City");
+INSERT INTO characters (first_name, last_name, birthdate, birthplace) VALUES ("Lily", "van der Woodsen", "1966-03-09", "New York City");
+INSERT INTO characters (first_name, last_name, birthdate, birthplace) VALUES ("Rufus", "Humphrey", "1965-12-07", "New York City");
+INSERT INTO characters (first_name, last_name, birthdate, birthplace) VALUES ("Eleanor", "Waldorf", "1960-08-20", "New York City");
+INSERT INTO characters (first_name, last_name, birthdate, birthplace) VALUES ("Dorota", "Kishlovsky", NULL, "Poland");
+
+SELECT * FROM characters
+ORDER BY last_name;
+
+/* Who prides themselves as the Upper East Siders? */
+SELECT first_name, last_name, birthplace FROM characters
+WHERE birthplace = "Manhattan"
+ORDER BY last_name;
+
+/* Who are the outsiders that infiltrated the socialites? */
+SELECT first_name, last_name, birthplace FROM characters
+WHERE NOT birthplace = "Manhattan" AND NOT birthplace = "New York City"
+ORDER BY last_name;
+
+/* Filter the characters' age, oldest to youngest */
+SELECT * FROM characters
+ORDER BY birthdate;
+
+/* Create table that displays the characters targeted by Gossip Girl and the numerous aliases given to them*/
+CREATE TABLE alias (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+alias_id INTEGER,
+gossipgirl_alias TEXT);
+
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (1, "The It Girl");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (1, "S");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (2, "Queen B");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (2, "Miss Blair");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (2, "B");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (3, "Golden Boy");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (3, "Archibald");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (4, "Bass Jr.");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (5, "Brooklyn");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (5, "Lonely Boy");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (5, "Humphrey");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (6, "Brooklyn");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (6, "Documentary Girl");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (6, "V");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (7, "Little J");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (8, NULL);
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (9, "G");
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (10, NULL);
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (11, NULL);
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (12, NULL);
+INSERT INTO alias (alias_id, gossipgirl_alias) VALUES (13, NULL);
+
+SELECT * FROM alias;
+
+/* Which aliases where given to Blair Waldorf? */
+SELECT characters.first_name, characters.last_name, alias.gossipgirl_alias FROM characters
+JOIN alias
+ON characters.id = alias.alias_id
+WHERE first_name = "Blair";
+
+/* Which characters remained untouched by Gossip Girl nicknames? */
+SELECT characters.first_name, characters.last_name, alias.gossipgirl_alias FROM characters
+JOIN alias
+ON characters.id = alias.alias_id
+WHERE gossipgirl_alias IS NULL;
+
+/* Create table that is includes the interests and hobbies of the characters */
+CREATE TABLE character_interests (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+character_id INTEGER,
+interest TEXT);
+INSERT INTO character_interests (character_id, interest) VALUES (1, "shopping");
+INSERT INTO character_interests (character_id, interest) VALUES (1, "dating");
+INSERT INTO character_interests (character_id, interest) VALUES (1, "philanthropy");
+INSERT INTO character_interests (character_id, interest) VALUES (2, "shopping");
+INSERT INTO character_interests (character_id, interest) VALUES (2, "scheming");
+INSERT INTO character_interests (character_id, interest) VALUES (2, "philanthropy");
+INSERT INTO character_interests (character_id, interest) VALUES (2, "feeding ducks");
+INSERT INTO character_interests (character_id, interest) VALUES (3, "soccer");
+INSERT INTO character_interests (character_id, interest) VALUES (4, "scheming");
+INSERT INTO character_interests (character_id, interest) VALUES (4, "drinking");
+INSERT INTO character_interests (character_id, interest) VALUES (5, "reading");
+INSERT INTO character_interests (character_id, interest) VALUES (5, "writing");
+INSERT INTO character_interests (character_id, interest) VALUES (5, "soccer");
+INSERT INTO character_interests (character_id, interest) VALUES (6, "documentaries");
+INSERT INTO character_interests (character_id, interest) VALUES (6, "playwriting");
+INSERT INTO character_interests (character_id, interest) VALUES (7, "shopping");
+INSERT INTO character_interests (character_id, interest) VALUES (7, "fashion");
+INSERT INTO character_interests (character_id, interest) VALUES (7, "sewing");
+INSERT INTO character_interests (character_id, interest) VALUES (8, "debate");
+INSERT INTO character_interests (character_id, interest) VALUES (9, "scheming");
+INSERT INTO character_interests (character_id, interest) VALUES (9, "partying");
+INSERT INTO character_interests (character_id, interest) VALUES (9, "partying");
+INSERT INTO character_interests (character_id, interest) VALUES (9, "partying");
+INSERT INTO character_interests (character_id, interest) VALUES (10, "philanthropy");
+INSERT INTO character_interests (character_id, interest) VALUES (11, "singing");
+INSERT INTO character_interests (character_id, interest) VALUES (12, "fashion");
+INSERT INTO character_interests (character_id, interest) VALUES (13, "feeding ducks");
+
+/* Show the interests of the characters ordered by alphabetical order */
+SELECT characters.first_name, characters.last_name, character_interests.interest FROM character_interests
+JOIN characters
+ON character_interests.character_id = characters.id
+ORDER BY interest;
+
+/* Identify the main schemers of the show */
+SELECT characters.first_name, characters.last_name, character_interests.interest FROM character_interests
+JOIN characters
+ON character_interests.character_id = characters.id
+WHERE interest = "scheming"; 
+
+/* Filter to find the interests of Dan Humphrey */
+SELECT characters.first_name, characters.last_name, character_interests.interest FROM characters
+LEFT OUTER JOIN character_interests
+ON characters.id = character_interests.character_id
+WHERE first_name = "Dan";
+
+/* Create table with actor information */
+CREATE TABLE actors (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+actor_id INTEGER,
+first_name TEXT,
+last_name TEXT,
+episode_appearances INTEGER, 
+birthdate TEXT);
+
+INSERT INTO actors (actor_id, first_name, last_name, episode_appearances, birthdate) VALUES (1, "Blake", "Lively", 121, "1987-08-25");
+INSERT INTO actors (actor_id, first_name, last_name, episode_appearances, birthdate) VALUES (2, "Leighton", "Meester", 121, "1986-04-09");
+INSERT INTO actors (actor_id, first_name, last_name, episode_appearances, birthdate) VALUES (3, "Chace", "Crawford", 115, "1985-07-18");
+INSERT INTO actors (actor_id, first_name, last_name, episode_appearances, birthdate) VALUES (4, "Ed", "Westwick", 118, "1987-06-27");
+INSERT INTO actors (actor_id, first_name, last_name, episode_appearances, birthdate) VALUES (5, "Penn", "Badgley", 121, "1986-11-01");
+INSERT INTO actors (actor_id, first_name, last_name, episode_appearances, birthdate) VALUES (6, "Jessica", "Szohr", 69, "1985-03-31");
+INSERT INTO actors (actor_id, first_name, last_name, episode_appearances, birthdate) VALUES (7, "Taylor", "Momsen", 72, "1993-07-26");
+INSERT INTO actors (actor_id, first_name, last_name, episode_appearances, birthdate) VALUES (8, "Connor", "Paolo", 53, "1990-07-11");
+INSERT INTO actors (actor_id, first_name, last_name, episode_appearances, birthdate) VALUES (9, "Michelle", "Trachtenberg", 28, "1985-10-11");
+INSERT INTO actors (actor_id, first_name, last_name, episode_appearances, birthdate) VALUES (10, "Kelly", "Rutherford", 96, "1968-11-06");
+INSERT INTO actors (actor_id, first_name, last_name, episode_appearances, birthdate) VALUES (11, "Matthew", "Settle", 119, "1969-09-17");
+INSERT INTO actors (actor_id, first_name, last_name, episode_appearances, birthdate) VALUES (12, "Margaret", "Colin", 34, "1958-05-26");
+INSERT INTO actors (actor_id, first_name, last_name, episode_appearances, birthdate) VALUES (13, "Zuzanna", "Szadkowski", 79, "1978-10-22");
+
+/* In alphabetical order, who were the main cast members of Gossip Girl? */
+SELECT * FROM actors
+ORDER BY last_name;
+
+/* Which actors had the most episodic screentime? */
+SELECT first_name, last_name, episode_appearances FROM actors
+ORDER BY episode_appearances DESC;
+
+/* Create CASE query for main, side, and minor characters from the main cast list */
+SELECT first_name AS actor_firstname, last_name AS actor_lastname, episode_appearances,
+    CASE
+        WHEN episode_appearances > 115
+        THEN "main character"
+        WHEN episode_appearances > 65
+        THEN "side character"
+    ELSE "minor character"
+    END AS "character_type"
+FROM actors
+ORDER BY episode_appearances DESC;
+
+/* Display CASE query from above but with the character name using JOIN */
+SELECT characters.first_name AS charactor_firstname, characters.last_name AS charactor_lastname, actors.episode_appearances,
+    CASE
+        WHEN episode_appearances > 115
+        THEN "main character"
+        WHEN episode_appearances > 65
+        THEN "side character"
+        ELSE "minor character"
+    END AS "character_type"
+FROM actors
+JOIN characters
+ON characters.id = actors.actor_id
+ORDER BY episode_appearances DESC;
+
+/* Based on the age of the actors, query a CASE that examines whether the actors accurately depict the age of the characters they portray */
+
+SELECT actors.first_name, actors.last_name,
+    CASE
+        WHEN actors.birthdate < characters.birthdate
+        THEN "older than age portrayed"
+        WHEN actors.birthdate >= characters.birthdate
+        THEN "younger than age portrayed"
+        ELSE "age not defined"
+    END AS "age portrayal", 
+characters.first_name, characters.last_name
+FROM actors
+JOIN characters
+ON actors.actor_id = characters.id;
+
+/* Create table to connect the id integer of actors with their assigned Gossip Girl character*/
+CREATE TABLE cast_list (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+character_id INTEGER,
+actor_id INTEGER);
+INSERT INTO cast_list (character_id, actor_id) VALUES (1, 1);
+INSERT INTO cast_list (character_id, actor_id) VALUES (2, 2);
+INSERT INTO cast_list (character_id, actor_id) VALUES (3, 3);
+INSERT INTO cast_list (character_id, actor_id) VALUES (4, 4);
+INSERT INTO cast_list (character_id, actor_id) VALUES (5, 5);
+INSERT INTO cast_list (character_id, actor_id) VALUES (6, 6);
+INSERT INTO cast_list (character_id, actor_id) VALUES (7, 7);
+INSERT INTO cast_list (character_id, actor_id) VALUES (8, 8);
+INSERT INTO cast_list (character_id, actor_id) VALUES (9, 9);
+INSERT INTO cast_list (character_id, actor_id) VALUES (10, 10);
+INSERT INTO cast_list (character_id, actor_id) VALUES (11, 11);
+INSERT INTO cast_list (character_id, actor_id) VALUES (12, 12);
+INSERT INTO cast_list (character_id, actor_id) VALUES (13, 13);
+
+SELECT * FROM cast_list;
+
+/* The above query is not very user friendly, JOIN the cast list with the actors and characters tables to increase viewers' readability */
+
+SELECT c.first_name AS charactor_firstname, c.last_name AS charactor_lastname, a.first_name AS actor_firstname, a.last_name AS actor_lastname
+FROM cast_list
+JOIN actors AS a
+ON cast_list.actor_id = a.actor_id
+JOIN characters AS c
+ON cast_list.character_id = c.id
+ORDER BY charactor_lastname;
