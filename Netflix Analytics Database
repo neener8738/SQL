@@ -39,3 +39,46 @@ FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" titles
 WHERE titles.type = 'Movie'
 ORDER BY titles.release_year ASC
 LIMIT 1;
+
+-- Use a subquery to find the oldest movie in the database and the year it was made
+SELECT title, release_year 
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info"
+WHERE type = 'Movie'
+AND release_year <= 
+(SELECT MIN(release_year) 
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info"
+WHERE type = 'Movie');
+
+-- Find TV shows within the database from the United Kingdom
+SELECT titles.title, people.director, people.cast, titles.release_year, titles.country
+FROM "CharlotteChaze/BreakIntoTech"."netflix_people" people
+LEFT JOIN "CharlotteChaze/BreakIntoTech"."netflix_titles_info" titles
+ON people.show_id = titles.show_id
+WHERE titles.type = 'TV Show' AND titles.country LIKE '%United Kingdom%';
+
+-- Find TV shows within the database that were made from the United Kingdom ONLY and organize by the shows released most recently
+SELECT titles.title, people.director, people.cast, titles.release_year, titles.country
+FROM "CharlotteChaze/BreakIntoTech"."netflix_people" people
+LEFT JOIN "CharlotteChaze/BreakIntoTech"."netflix_titles_info" titles
+ON people.show_id = titles.show_id
+WHERE titles.type = 'TV Show' AND titles.country LIKE 'United Kingdom'
+ORDER BY titles.release_year DESC;
+
+-- Find all projects that Mike Flanagan has contributed towards.
+SELECT titles.title, people.director, people.cast, titles.release_year, titles.country
+FROM "CharlotteChaze/BreakIntoTech"."netflix_people" people
+LEFT JOIN "CharlotteChaze/BreakIntoTech"."netflix_titles_info" titles
+ON people.show_id = titles.show_id
+WHERE people.director = 'Mike Flanagan';
+
+-- How many times has Mike Flanagan worked with Kate Siegel on a project?
+SELECT count(*)
+FROM "CharlotteChaze/BreakIntoTech"."netflix_people" people
+WHERE people.director = 'Mike Flanagan' AND people.cast LIKE '%Kate Siegel%';
+
+-- Which projects did Mike Flanagan and Kate Siegel work on together?
+SELECT titles.title, people.director, people.cast
+FROM "CharlotteChaze/BreakIntoTech"."netflix_people" people
+LEFT JOIN "CharlotteChaze/BreakIntoTech"."netflix_titles_info" titles
+ON people.show_id = titles.show_id
+WHERE people.director = 'Mike Flanagan' AND people.cast LIKE '%Kate Siegel%';
