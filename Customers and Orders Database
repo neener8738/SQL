@@ -1,0 +1,106 @@
+-- Objective: Use SQLite to filter and query the 'Break Into Tech' Customers and Orders Database
+
+-- Sample 20 rows from the customers table
+SELECT * FROM BIT_DB.customers
+LIMIT 20;
+-- Shows columns order_id and acctnm
+
+-- Sample 20 rows from the JanSales table
+SELECT * FROM BIT_DB.JanSales
+LIMIT 20;
+-- JanSales.orderID is connected to customers.order_id
+
+-- Query all columns from the customers table and filter out incorrect order_id values
+SELECT * FROM BIT_DB.customers
+WHERE length(order_id) = 6 AND order_id <> 'Order ID';
+-- Results in 21667 rows
+
+-- How many orders were placed in January?
+SELECT count(orderID) AS total_jan_orders FROM BIT_DB.JanSales
+WHERE length(orderID) = 6 AND orderID <> 'Order ID';
+-- Results in 9681 total January orders
+
+-- How many of those orders were for an iPhone?
+SELECT count(Product) AS iPhone_jan_orders FROM BIT_DB.JanSales 
+WHERE Product = 'iPhone' AND length(orderID) = 6 AND orderID <> 'Order ID';
+-- Results in 379 iPhone January orders
+
+-- Below is another way to find the amount of January iPhone orders
+SELECT count(orderID) AS iPhone_jan_orders FROM BIT_DB.JanSales
+WHERE Product = 'iPhone' AND length(orderID) = 6 AND orderID <> 'Order ID';
+-- Results in 379 iPhone January orders
+
+-- Select the customer account numbers for all the orders that were placed in February.
+SELECT customers.acctnum, FebSales.orderdate FROM BIT_DB.customers
+INNER JOIN BIT_DB.FebSales
+ON customers.order_id = FebSales.orderID
+WHERE FebSales.orderID <> 'Order ID' AND FebSales.orderdate IS NOT NULL
+ORDER BY FebSales.orderdate;
+-- Outputs 13006 rows
+
+-- Find the distinct customer account numbers for all the orders that were placed in February 
+SELECT DISTINCT customers.acctnum, FebSales.orderdate FROM BIT_DB.customers
+INNER JOIN BIT_DB.FebSales
+ON customers.order_id = FebSales.orderID
+WHERE FebSales.orderID <> 'Order ID' AND FebSales.orderdate IS NOT NULL
+ORDER BY FebSales.orderdate;
+-- Outputs 11986 rows, finds the distinct customer account numbers and eliminates duplicate acctnm entries for customers that made multiple orders
+
+-- Below is another way to find distinct customer account numbers for all the orders that were placed in February
+SELECT DISTINCT customers.acctnum FROM BIT_DB.customers
+INNER JOIN BIT_DB.FebSales
+ON customers.order_id = FebSales.orderID
+WHERE length(orderID) = 6 AND orderID <> 'Order ID';
+-- Outputs 11986 rows of distinct February customer account numbers; query has varied WHERE condition parameters than the query above but outputs similar and accurate result
+
+-- Which product was the cheapest one sold in January, and what was the price? Explain how various queries give similar solutions.
+
+-- Find January product with the lowest price, use distinct in case multiples of the product were ordered
+SELECT DISTINCT Product, min(price) AS Price FROM BIT_DB.JanSales;
+-- Outputs 1 row; AAA Batteries (4-pack) Product with a 2.99 Price
+
+-- Use the concept above but in a subquery
+SELECT DISTINCT Product, Price FROM BIT_DB.JanSales 
+WHERE Price IS (SELECT min(price) AS Price FROM BIT_DB.JanSales);
+
+-- Order by the Price column to sort from cheapest to most expensive, the limit of 1 narrows the search to cheapest distinct product
+SELECT DISTINCT Product, price AS Price FROM BIT_DB.JanSales
+ORDER BY Price ASC LIMIT 1;
+-- Outputs 1 row; AAA Batteries (4-pack) Product with a 2.99 Price
+
+-- Use GROUP BY to clarify the query to find the minimum price of all products
+SELECT DISTINCT Product, min(price) AS Price FROM BIT_DB.JanSales Jan 
+GROUP BY Product, Price
+ORDER BY Price ASC LIMIT 1;
+-- Outputs 1 row; AAA Batteries (4-pack) Product with a 2.99 Price
+
+-- How many AAA Batteries (4-pack) were ordered in January?
+SELECT count(Product) AS Jan_Batteries FROM BIT_DB.JanSales
+WHERE Product LIKE '%AAA Batteries%';
+-- Generates count of 1082 
+
+-- What is the quantity of all products sold in May?
+SELECT Product, sum(Quantity) AS Quantity FROM BIT_DB.MaySales
+GROUP BY Product
+ORDER BY Quantity ASC;
+-- Outputs 21 rows of products and their quantities sorted from least to most products ordered per product type
+
+-- What is the total revenue and quantity for each product sold in January? 
+SELECT Product, sum(Quantity) AS Quantity, round(sum(Quantity)*price) AS Revenue FROM BIT_DB.JanSales
+GROUP BY Product
+ORDER BY Revenue ASC;
+-- Revenue is the sum of the quantity of each product sold at their price; sum(quanitity)*price
+
+-- Which products were sold in February at 548 Lincoln St, Seattle, WA 98101, how many of each were sold, and what was the total revenue?
+SELECT Product, sum(Quantity) AS Quantity, sum(Quantity)*price AS Revenue FROM BIT_DB.FebSales
+WHERE location LIKE '%548 Lincoln St, Seattle, WA 98101%'
+GROUP BY Product;
+-- Outputs a quantity of 2 AA Batteries (4-pack) with a revenue of 7.68
+
+-- How many customers ordered more than 2 products at a time in February, and what was the average amount spent for those customers?
+SELECT count(DISTINCT customers.acctnum) AS Customers, avg(FebSales.Quantity*price) AS AVG_Price
+FROM BIT_DB.FebSales
+LEFT JOIN BIT_DB.customers
+ON customers.order_id = FebSales.orderID
+WHERE Quantity > 2 AND length(order_ID) = 6 AND order_ID <> 'Order ID';
+-- Outputs 278 customers with an average spending amount of 13.82
