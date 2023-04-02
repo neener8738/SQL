@@ -104,3 +104,45 @@ LEFT JOIN BIT_DB.customers
 ON customers.order_id = FebSales.orderID
 WHERE Quantity > 2 AND length(order_ID) = 6 AND order_ID <> 'Order ID';
 -- Outputs 278 customers with an average spending amount of 13.82
+
+-- Advanced Data Filtering Techniques; explore WHERE conditions using wildcards
+
+-- Use BETWEEN to filter February order dates between the 13th and the 18th in 2019
+SELECT orderdate FROM BIT_DB.FebSales
+WHERE orderdate BETWEEN '02/13/19 00:00' AND '02/18/19 00:00'
+ORDER BY orderdate;
+-- Outputs 2185 rows
+
+-- Find the location of the order placed on February 18th 2019 at 1:35 AM
+SELECT location FROM BIT_DB.FebSales 
+WHERE orderdate = '02/18/19 01:35';
+-- Outputs 866 Spruce St, Portland, ME 04101
+
+-- Find the amount of orders placed on or after February 18th of 2019 no matter the HH:MM time
+SELECT sum(Quantity) FROM BIT_DB.FebSales 
+WHERE orderdate LIKE '02/18/19%';
+-- Outputs 508 orders
+
+-- Find product types that are batteries
+SELECT DISTINCT Product FROM BIT_DB.FebSales
+WHERE Product LIKE '%Batteries%';
+-- Outputs AA Batteries (4-pack) and AAA Batteries (4-pack)
+
+-- Find products that have a price ending in .99 dollars
+SELECT DISTINCT Product, price AS Price FROM BIT_DB.FebSales 
+WHERE Price LIKE '%.99'
+ORDER BY Price;
+-- Outputs 8 rows of products with prices ending in .99 dollars ascending cheapest to most expensive 
+
+-- List all the products sold in Los Angeles in February, and include how many of each were sold
+SELECT Product, Quantity, price AS Price, location FROM BIT_DB.FebSales
+WHERE location LIKE '%Los Angeles%'
+GROUP BY Product
+ORDER BY Price ASC;
+-- Outputs 19 rows
+
+-- Another way to find LA products and quantity sold in Feb
+SELECT Product, SUM(quantity) FROM BIT_DB.FebSales 
+WHERE location like '%Los Angeles%'
+GROUP BY Product;
+-- Outputs 19 rows
