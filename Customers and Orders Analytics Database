@@ -146,3 +146,50 @@ SELECT Product, SUM(quantity) FROM BIT_DB.FebSales
 WHERE location like '%Los Angeles%'
 GROUP BY Product;
 -- Outputs 19 rows
+
+-- Advanced Queries for Customers and Orders Analytics
+
+-- Which locations in New York received at least 3 orders in January, and how many orders did they each receive? (Hint: use HAVING).
+SELECT DISTINCT location, Quantity, count(orderID) FROM BIT_DB.JanSales 
+WHERE location LIKE '%New York%' AND length(orderID) = 6 AND orderID <> 'Order ID'
+GROUP BY location
+HAVING count(orderID) >= 3
+ORDER BY count(orderID);
+-- Outputs 4 New York locations sorted by ascending count of orders received
+
+-- How many of each type of headphone were sold in February?
+SELECT Product, sum(Quantity) AS Quantity FROM BIT_DB.FebSales
+WHERE Product LIKE '%Headphone%'
+GROUP BY Product
+ORDER BY Quantity;
+-- Outputs  844 Bose SoundSport Headphones, 1013 Apple Airpods Headphones, 1282 Wired Headphones
+
+-- What was the average amount spent per account in February? Find the average amount spent / number of accounts, not the amount spent by each account.
+SELECT sum(Quantity*price)/count(customers.acctnum) AS Average_Account_Spending FROM BIT_DB.customers
+JOIN BIT_DB.FebSales
+ON customers.order_id = FebSales.orderID
+WHERE length(orderID) = 6 AND orderID <> 'Order ID';
+-- Outputs 190.00034676304287
+
+-- Find the same result as the query above but use avg() aggregate fxn
+SELECT avg(Quantity*price) AS Average_Account_Spending FROM BIT_DB.FebSales
+LEFT JOIN BIT_DB.customers
+ON FebSales.orderid=customers.order_id
+WHERE length(orderID) = 6 AND orderID <> 'Order ID';
+-- Outputs 190.00034676304287
+
+-- What was the average quantity of products purchased per account in February? Find the overall average, not the average for each account individually.
+SELECT sum(quantity)/count(customers.acctnum) FROM BIT_DB.FebSales
+LEFT JOIN BIT_DB.customers 
+ON FebSales.orderid=customers.order_id
+WHERE length(orderid) = 6 AND orderid <> 'Order ID';
+-- Outputs 1
+
+-- Which product brought in the most revenue in January and how much revenue did it bring in total?
+SELECT Product, sum(Quantity)*price AS Revenue FROM BIT_DB.JanSales
+GROUP BY Product
+ORDER BY Revenue DESC LIMIT 1;
+-- Outputs Macbook Pro Laptop with Revenue of 399500
+
+-- Important Note: Since prices per product are the same, sum(Quantity)*price works to find revenue
+-- If prices for products differed, revenue would more accurately be found using sum(Quantity*price)
