@@ -1,0 +1,98 @@
+-- This project uses SQL relational queries to filter and analyze a Spotify Dataset of the top 50 songs in 2021
+-- Dataset downloaded from Kaggle https://www.kaggle.com/datasets/equinxx/spotify-top-50-songs-in-2021?select=spotify_top50_2021.csv
+
+-- Create SpotifyData table using SQLiteStudio
+CREATE TABLE BIT_DB.SpotifyData (
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+song_key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+song_mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness decimal(8,7) NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL );
+
+-- Download and import the dataset .csv into the table created to insert the Spotify dataset column and row information
+-- Tools> Import> Select BIT_DB Database and Spotifydata Table> Select UTF-8 Text encoding, Ignore errors, and First line represents CSV column names> Done
+
+-- Analyze the dataset using relational queries 
+SELECT * FROM BIT_DB.SpotifyData;
+
+-- How many rows are there in the table?
+SELECT count(*) FROM BIT_DB.SpotifyData;
+-- Verfies 50 rows of information for the top 50 songs of 2021 
+
+-- Group the table by artist and their tracks
+SELECT * FROM BIT_DB.SpotifyData
+GROUP BY artist_name, track_name;
+
+-- What is the average danceability by artist and track? 
+SELECT artist_name, track_name, AVG(danceability) AS avg_danceability FROM BIT_DB.SpotifyData
+GROUP BY artist_name, track_name
+ORDER BY avg_danceability DESC;
+-- Shows the artist and their track title sorted by highest average danceability to lowest; 50 rows loaded
+
+-- Who are the top 10 artists based on popularity? 
+SELECT artist_name, popularity FROM BIT_DB.SpotifyData
+ORDER BY popularity DESC
+LIMIT 10;
+-- Olivia Rodrigo, Ed Sheeran, Doja Cat, Glass Animals, Bad Bunny, The Weeknd, Måneskin, Doja Cat, Olivia Rodrigo, The Kid LAROI
+
+-- What are the bottom 10 track names based on lowest popularity?
+SELECT track_name, artist_name, popularity FROM BIT_DB.spotifydata
+ORDER BY popularity ASC
+LIMIT 10;
+-- Dynamite, Todo De Ti, Butter, Astronaut In The Ocean, Arcade, Qué Más Pues?, Lemonade (feat. Gunna Don Toliver & NAV), Bandido, RAPSTAR, Fiel
+
+-- Which artist released the longest song? 
+SELECT artist_name, track_name, duration_ms FROM BIT_DB.SpotifyData
+ORDER BY duration_ms DESC
+LIMIT 1;
+-- Pepas by Farruko at 287120 ms
+
+-- Find danceability of top 10 popular artists and tracks
+SELECT artist_name, track_name, popularity, danceability FROM BIT_DB.SpotifyData
+ORDER BY popularity DESC
+LIMIT 10;
+
+-- What's the average danceability for the 10 most popular songs?
+SELECT AVG(danceability) AS avg_danceability FROM BIT_DB.SpotifyData 
+ORDER BY popularity DESC
+LIMIT 10;
+-- Outputs 0.68572
+
+-- Find avg popularity, danceability, and energy by artist. 
+SELECT DISTINCT artist_name, avg(popularity), avg(danceability), avg(energy) FROM BIT_DB.SpotifyData
+GROUP BY artist_name;
+-- Shows the popularity, danceability, and energy values of the distinct 35 artists of the 2021 top 50 song hit dataset
+
+-- How many tracks have a 4/4 time signature?
+SELECT count(*) FROM BIT_DB.SpotifyData
+WHERE time_signature = 4;
+-- 48 songs have a time signature of 4/4
+
+-- What are the names of the tracks that do not have a 4/4 time signature?
+SELECT artist_name, track_name, time_signature FROM BIT_DB.Spotifydata
+WHERE time_signature <> 4;
+-- Heartbreak Anniversary by Giveon and Arcade by Duncan Laurence have time signature value of 3
+
+-- Which tracks have other artists featured?
+SELECT artist_name, track_name, popularity, danceability FROM BIT_DB.Spotifydata
+WHERE track_name LIKE '%feat.%'
+ORDER BY popularity DESC;
+-- Outputs 8 tracks with other artist contributors featured, ordered by most popular
+
+-- How many times is SZA listed in the top 50 songs of 2021?
+SELECT artist_name, track_name FROM BIT_DB.SpotifyData
+WHERE artist_name = 'SZA' OR track_name LIKE '%SZA%';
+-- Shows 2 songs, Good Days by SZA and Kiss Me More by Doja Cat feat. SZA
