@@ -1,0 +1,171 @@
+-- Chinook is a digital media store; this database contains tables for artists, albums, media tracks, invoices, and customers
+
+-- Sample the rows from each table
+SELECT * FROM chinook.albums
+LIMIT 20;
+
+SELECT * FROM chinook.artists
+LIMIT 20;
+
+SELECT * FROM chinook.customers
+LIMIT 20;
+
+SELECT * FROM chinook.employees
+LIMIT 20;
+
+SELECT * FROM chinook.genres
+LIMIT 20;
+
+SELECT * FROM chinook.invoice_items
+LIMIT 20;
+
+SELECT * FROM chinook.invoices
+LIMIT 20;
+
+SELECT * FROM chinook.media_types;
+
+SELECT * FROM chinook.playlist_track
+LIMIT 20;
+
+SELECT * FROM chinook.playlists
+LIMIT 20;
+
+SELECT * FROM chinook.tracks
+LIMIT 20;
+
+-- Show Customers (their full names, customer ID, and country) who are not in the US. (!= or <>)
+SELECT FirstName, LastName, CustomerId, Country FROM chinook.customers
+WHERE Country <> 'USA';
+
+-- Show only the Customers from Brazil.
+SELECT FirstName, LastName, CustomerId, Country FROM chinook.customers
+WHERE Country = 'Brazil';
+
+-- Find the Invoices of customers who are from Brazil. Show the customer's full name, Invoice ID, Date of the invoice, and billing country.
+SELECT customers.FirstName, customers.LastName, invoices.InvoiceId, invoices.InvoiceDate, invoices.BillingCountry FROM chinook.invoices
+LEFT JOIN chinook.customers
+ON invoices.CustomerId = customers.CustomerId
+WHERE customers.Country = 'Brazil';
+-- 35 invoice entries
+
+-- Find the amount of invoices from the distinct Brazil customers.
+SELECT customers.FirstName, customers.LastName, COUNT(invoices.InvoiceId) AS Invoices, invoices.BillingCountry FROM chinook.invoices
+LEFT JOIN chinook.customers
+ON invoices.CustomerId = customers.CustomerId
+WHERE customers.Country = 'Brazil'
+GROUP BY LastName;
+-- 5 distinct customers with 7 invoices each 
+
+-- Show the Employees who are Sales Agents.
+SELECT FirstName, LastName, Title FROM chinook.employees
+WHERE Title LIKE '%Sales%Agent%';
+-- Shows 3 employees with the sales support agent title
+
+-- Similarly:
+SELECT * FROM chinook.Employees
+WHERE Title = 'Sales Support Agent';
+-- Shows rows with all column information for sales support agent of 3 employees
+
+-- Find the employees who work in the IT department.
+SELECT * FROM chinook.employees
+WHERE Title LIKE '%IT%';
+-- Shows 3 IT employees
+
+-- Find a unique/distinct list of billing countries from the Invoice table.
+SELECT DISTINCT BillingCountry FROM chinook.invoices;
+-- Outputs 24 countries
+
+-- Provide a query that shows the invoices associated with each sales agent. Include the Sales Agent's full name.
+SELECT employees.FirstName, employees.LastName, invoices.InvoiceId FROM chinook.employees
+LEFT JOIN chinook.customers ON customers.SupportRepId = employees.EmployeeId
+LEFT JOIN chinook.invoices ON invoices.CustomerId = customers.CustomerId
+WHERE invoices.InvoiceId IS NOT NULL;
+-- Outputs 412 rows of invoices associated with the sales support agents
+
+-- How many invoices did each sales support agent assist with?
+SELECT employees.FirstName, employees.LastName, COUNT(invoices.InvoiceId) AS Total_Invoices FROM chinook.employees
+LEFT JOIN chinook.customers ON customers.SupportRepId = employees.EmployeeId
+LEFT JOIN chinook.invoices ON invoices.CustomerId = customers.CustomerId
+WHERE invoices.InvoiceId IS NOT NULL
+GROUP BY employees.LastName;
+-- S. Johnson 126, M. Park 140, J. Peacock 146; 412 total invoices from the sales support agents 
+
+-- Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers.
+SELECT invoices.Total, customers.FirstName, customers.LastName, customers.Country, employees.FirstName, employees.LastName
+FROM chinook.invoices
+LEFT JOIN chinook.customers ON customers.CustomerId = invoices.CustomerId
+LEFT JOIN chinook.employees ON employees.EmployeeId = customers.SupportRepId
+WHERE invoices.InvoiceId IS NOT NULL;
+-- 412 invoice entries
+
+-- Which customer had the largest invoice total?
+SELECT SUM(invoices.Total) AS Invoice_Total, customers.FirstName, customers.LastName, customers.Country, employees.FirstName, employees.LastName
+FROM chinook.invoices
+LEFT JOIN chinook.customers ON customers.CustomerId = invoices.CustomerId
+LEFT JOIN chinook.employees ON employees.EmployeeId = customers.SupportRepId
+WHERE invoices.InvoiceId IS NOT NULL
+GROUP BY customers.LastName
+ORDER BY Invoice_Total DESC;
+-- Helena Holy from the Czech Republic had an invoice total of 49.62.
+
+-- Which Country had the highest total invoice sum, and what was the invoice count?
+SELECT ROUND(SUM(invoices.Total), 2) AS Invoice_Total, invoices.BillingCountry, COUNT(invoices.BillingCountry) AS Invoice_Count
+FROM chinook.invoices
+WHERE invoices.InvoiceId IS NOT NULL
+GROUP BY customers.Country
+ORDER BY Invoice_Total DESC;
+-- The US had an invoice total of 523.06 with 91 invoices.
+
+-- How many Invoices were there in 2009?
+SELECT COUNT(InvoiceId) AS Invoices_2009 FROM chinook.invoices
+WHERE InvoiceDate LIKE '%2009%';
+-- 83 invoices from 2009
+
+-- Similarly, the same result can be found using BETWEEN:
+SELECT COUNT(*) AS Invoices_2009 FROM chinook.Invoices
+WHERE InvoiceDate BETWEEN '2009-01-01' AND '2009-12-31';
+-- 83 invoices from 2009
+
+-- What are the total sales for 2009?
+SELECT ROUND(SUM(Total), 2) AS Total_Sales FROM chinook.invoices
+WHERE InvoiceDate BETWEEN '2009-01-01' AND '2009-12-31';
+-- 449.46 sales
+
+-- Write a query that includes the purchased track name with each invoice line ID.
+SELECT tracks.Name, invoice_items.InvoiceLineId FROM chinook.tracks
+LEFT JOIN chinook.invoice_items ON invoice_items.TrackId = tracks.TrackId
+WHERE invoice_items.InvoiceLineId IS NOT NULL;
+-- 2240 output track names with associated invoice line IDs
+
+-- Write a query that includes the purchased track name AND artist name with each invoice line ID.
+SELECT tracks.Name, artists.Name AS 'Artist Name', invoice_items.InvoiceLineId FROM chinook.invoice_items
+LEFT JOIN chinook.tracks ON tracks.TrackId = invoice_items.TrackId
+LEFT JOIN chinook.albums ON albums.AlbumId = tracks.AlbumId
+LEFT JOIN chinook.artists ON artists.ArtistId = albums.ArtistId;
+-- Outputs 2240 track names by their associated artist and invoice line ID
+
+-- Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+SELECT tracks.Name, albums.Title, media_types.Name AS Media, genres.Name AS Genre FROM chinook.tracks
+LEFT JOIN chinook.albums ON albums.AlbumId = tracks.AlbumId
+LEFT JOIN chinook.genres ON genres.GenreId = tracks.GenreId
+LEFT JOIN chinook.media_types ON media_types.MediaTypeId = tracks.MediaTypeId;
+-- Outputs 3503 tracks with album names, genres, and media types
+
+-- Show the total sales made by each sales agent.
+SELECT ROUND(SUM(invoices.Total), 2) AS Total_Sales, employees.FirstName, employees.LastName
+FROM chinook.invoices
+LEFT JOIN chinook.customers ON customers.CustomerId = invoices.CustomerId
+LEFT JOIN chinook.employees ON employees.EmployeeId = customers.SupportRepId
+WHERE employees.Title LIKE '%Sales%Agent%'
+GROUP BY employees.FirstName;
+-- J. Peacock 833.04, M. Park 775.40, S. Johnson 720.16
+
+-- Which sales agent made the most dollars in sales in 2009?
+SELECT ROUND(SUM(invoices.Total), 2) AS Total_Sales, employees.FirstName, employees.LastName
+FROM chinook.invoices
+LEFT JOIN chinook.customers ON customers.CustomerId = invoices.CustomerId
+LEFT JOIN chinook.employees ON employees.EmployeeId = customers.SupportRepId
+WHERE employees.Title LIKE '%Sales%Agent%' AND invoices.InvoiceDate LIKE '%2009%'
+GROUP BY employees.FirstName
+ORDER BY Total_Sales DESC LIMIT 1;
+-- S. Johnson made 164.34 in sales during 2009
